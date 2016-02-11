@@ -1,5 +1,5 @@
 {
-    "name": "Graph.InstallUbuntuTrusty",
+    "name": "Graph.InstallUbuntu",
     "options": {
         "defaults": {
             "obmServiceName": "noop-obm-service"
