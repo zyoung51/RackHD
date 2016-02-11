@@ -17,7 +17,7 @@ and [Ansible](http://docs.ansible.com/ansible/intro_installation.html)
 installed onto your system in order to use this script.
 
 **NOTE**: Do not use Vagrant 1.8.0, as the private network settings don't appear
-to be working correctly. Bug filed upstream with Vagrant at 
+to be working correctly. Bug filed upstream with Vagrant at
 https://github.com/mitchellh/vagrant/issues/6730.
 
 
@@ -213,6 +213,50 @@ the KVM packages after the default installation.
 of band management to trigger the machine to reboot. Once the workflow
 has been activated, the VM will need to be rebooted manually for the
 workflow to operate.
+
+### SETTING UP AN UBUNTU INSTALL WITH REMOTE MIRRORS
+
+`vagrant ssh`:
+
+    wget http://releases.ubuntu.com/14.04/ubuntu-14.04.3-server-amd64.iso
+    mkdir -p /tmp/14.04.3
+    sudo mount -o loop ubuntu-14.04.3-server-amd64.iso /tmp/14.04.3
+    cp -r /tmp/14.04.3 ~/src/on-http/static/http/trusty_iso/
+    sudo umount /tmp/14.04.3
+
+edit `/opt/onrack/etc/monorail.json` to add the following proxy stanza
+
+    "httpProxies": [{
+            "localPath": "/coreos",
+            "server": "http://stable.release.core-os.net",
+            "remotePath": "/amd64-usr/current/"
+        },
+        {
+            "localPath": "/ubuntu",
+            "server": "http://archive.ubuntu.com",
+            "remotePath": "/ubuntu"
+        }],
+
+The Ubuntu installer also wants a bit more memory available for the
+installation than we default our test VM, so we recommend updating
+it to 2GB of RAM with the following commands (if you haven't done so already):
+
+    VBoxManage controlvm poweroff pxe-1
+    VBoxManage modifyvm pxe-1 --memory 2048;
+    VBoxManage controlvm poweron pxe-1
+
+And then invoking the workflow to install CentOS you just unpacked
+
+    cd ~/src/rackhd/example
+    # make sure you're in the example directory to reference the sample JSON correctly
+
+    curl -H "Content-Type: application/json" \
+    -X POST --data @samples/ubuntu_trusty_install.json \
+    http://localhost:9090/api/1.1/nodes/566af6c77c5de76d1530d1f3/workflows | python -m json.tool
+
+ * manually reboot the VM to start the installation process
+
+
 
 ## HACKING THESE SCRIPTS
 

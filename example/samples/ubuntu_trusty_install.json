@@ -1,0 +1,14 @@
+{
+    "name": "Graph.InstallUbuntuTrusty",
+    "options": {
+        "defaults": {
+            "obmServiceName": "noop-obm-service"
+        },
+        "install-os": {
+            "repo": "{{api.server}}/ubuntu",
+            "rootPassword": "ubuntu",
+            "profile": "install-trusty.ipxe",
+            "completionUri": "renasar-ansible.pub"
+        }
+    }
+}
